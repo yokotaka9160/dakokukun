@@ -18,7 +18,7 @@
 					<tr>
 
 						<th width="33%"><a href="./admin_daily_attendance"><img class="icon" src="../static/image/calender.png"><br>日時勤怠</a></th>
-						<th class="selected-color" width="33%"><a href="#"><img class="icon" src="../static/image/edit.png"><br>編集</a></th>
+						<th class="selected-color" width="33%"><a href=""><img class="icon" src="../static/image/edit.png"><br>編集</a></th>
 						<th width="33%"><a href="/logout"><img class="icon" src="../static/image/logout.png"><br>ログアウト</a></th>
 
 					</tr>
@@ -34,7 +34,7 @@
 				    <div id="close" class="btn"><a href="#">×</a></div>
 				    <ul>
 				      <li id="a"><a href="./admin_daily_attendance">日時勤怠</a></li>
-				      <li id="b"><a href="#">編集</a></li>
+				      <li id="b"><a href="">編集</a></li>
 				      <li id="c"><a href="/logout">ログアウト</a></li>
 				    </ul>
 				 </div>
@@ -77,6 +77,9 @@
 				<input type="hidden" name="all" value="off">
 				<input type="checkbox" name="all" value="on"><p class="all-check">従業員全体の勤務状況を見る</p>
 				<button class="search-btn" type="submit" formaction="/edit">編集</button>
+				{% if error[0]!="" %}
+				<p class="error">{{error[0]}}</p>
+				{% endif %}
 			</div>
 	
 			<footer>

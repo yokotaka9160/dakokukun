@@ -7,6 +7,7 @@ import mysql.connector
 import jpholiday
 import calendar
 import workdays
+#12/15更新
 #おまじない
 app=Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -19,6 +20,7 @@ def timedelta_to_HM(td):
     """
     sec = td.total_seconds()
     return (sec//3600, sec%3600//60)
+#秒数sを時間、分に直す
 def int_to_HM(s):
     """
     TODO 上のコードとインデントそろってないですねdone
@@ -32,6 +34,7 @@ def int_to_HM(s):
     minutes=s%3600//60
         
     if minutes==0:
+        
         HM=str(hours)+":00"
                 
 
@@ -40,7 +43,8 @@ def int_to_HM(s):
         minutes="%02d" % minutes
         HM=str(hours)+":"+str(minutes)
                
-        return HM
+    return HM
+#秒数sを時間、分、秒に直した文字列を返す
 def int_to_HMS(s):
     """
     秒をH:M:Sに直す関数
@@ -67,7 +71,7 @@ def int_to_HMS(s):
                     seconds="%02d" % seconds
                     HMS=str(hours)+":"+str(minutes)+":"+str(seconds)
     return HMS
-
+#秒数sを時間、分、秒に直した数値をそれぞれ返す
 def int_to_HMS2(s):
     """
     秒をhour,minute,secondに分割するための関数
@@ -112,7 +116,7 @@ def _is_user_id_valid(input_username,input_password):
                 
                 conn.close()
 
-                for i in range(len(id_and_password)):
+                for i in range(len(id_and_password)):#(12/2)パスワード総当たり
                         if str(id_and_password[i][0]) == str(input_username) and str(id_and_password[i][1]) == str(input_password):
                                 return True
                                 
@@ -140,7 +144,7 @@ def admin_is_user_id_valid(input_username,input_password):
                 
                 conn.close()
 
-                for i in range(len(id_and_password)):
+                for i in range(len(id_and_password)):#(12/2)パスワード総当たり
                         if str(id_and_password[i][0]) == str(input_username) and str(id_and_password[i][1]) == str(input_password):
                                 return True
                                 
@@ -161,6 +165,9 @@ def login_go():
                 今回であれば、最終的にreturnする値が、下記なのでこの内容を拾ってくるためのコードであるように書いて頂けますと幸いです。
                 name=username_and_employeeno[0],employee_no=username_and_employeeno[1],error=error[0]
                 ログインした後の方がレビュー作業が出来そうなので、ここで一旦レビュー止めます。
+                DONE
+                engraving.htmlを表示するためにloginを成功させ，ユーザーの名前や社員番号を表示するために
+                name=username_and_employeeno[0],employee_no=username_and_employeeno[1],error=error[0]を渡す
                 """
                 today = datetime.today()
                 year=today.year
@@ -218,66 +225,78 @@ def login_go():
 @app.route("/admin_daily_attendance")
 def admin_daily_attendance():
         error=[]
-        if 'user_id' in session:
-                today = datetime.today()
-                year=today.year
-                month=today.month
-                month="%02d" % month
-                no=[]
-                day=[]
-                employee_no=[]
-                name=[]
-                start_time_timeOnly=[]
-                finish_time_timeOnly=[]
-                break_start_time_timeOnly=[]
-                break_finish_time_timeOnly=[]
-                interval_time=[]
-                approval_status=[] 
-                conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
-                
-                conn.ping(reconnect=True)
-                cur = conn.cursor(buffered=True)
-                #管理者の名前と社員番号を取得
-                cur.execute('select name,employee_no from ADMIN_USER_ACCOUNT where loginID= "' + str(session['user_id'][0]) + '";')
-                username_and_employeeno=cur.fetchone()
-                error.append(None)
-                #申請・承認状況が承認待ち(一般ユーザーが申請を行っている状態)であるものを取得
-                cur.execute('select * from WORK_STATUS where application_and_approval= "承認待ち" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
-                work_status_table=cur.fetchall()
-                #一般ユーザーを全取得
-                cur.execute('SELECT employee_no,name From USER_ACCOUNT')
-                general_user=cur.fetchall()
-                
-                #表示するデータが綺麗に出力されるように前処理
-                for i in range(len(work_status_table)):
-                        no.append(work_status_table[i][0])
-                        employee_no.append(work_status_table[i][1])
-                        day.append(work_status_table[i][2].day)
-                        start_time_timeOnly.append(work_status_table[i][4].time())
-                        finish_time_timeOnly.append(work_status_table[i][5].time())
-                        if work_status_table[i][6]==None:
-                                break_start_time_timeOnly.append("0:00")
-                        else:
-                                break_start_time_timeOnly.append(work_status_table[i][6].time())
-                        if work_status_table[i][7]==None:
-                                break_finish_time_timeOnly.append("0:00")
-                        else:
-                                break_finish_time_timeOnly.append(work_status_table[i][7].time())
-                        interval_time.append(work_status_table[i][8])
-                        approval_status.append(work_status_table[i][9])
-                for i in range(len(employee_no)):
-                        for j in range(len(general_user)):
-                                if employee_no[i]==general_user[j][0]:
-                                        name.append(general_user[j][1])
+        
+        today = datetime.today()
+        year=today.year
+        month=today.month
+        month="%02d" % month
+        no=[]
+        day=[]
+        employee_no=[]
+        name=[]
+        start_time_timeOnly=[]
+        finish_time_timeOnly=[]
+        break_start_time_timeOnly=[]
+        break_finish_time_timeOnly=[]
+        interval_time=[]
+        approval_status=[] 
+        conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
+        
+        conn.ping(reconnect=True)
+        cur = conn.cursor(buffered=True)
+        #管理者の名前と社員番号を取得
+        # cur.execute('select name,employee_no from ADMIN_USER_ACCOUNT where loginID= "' + str(session['user_id'][0]) + '";')
+        # username_and_employeeno=cur.fetchone()
+        error.append(None)
+        #申請・承認状況が承認待ち(一般ユーザーが申請を行っている状態)であるものを取得
+        cur.execute('select * from WORK_STATUS where application_and_approval= "承認待ち" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
+        work_status_table=cur.fetchall()
+        #一般ユーザーを全取得
+        cur.execute('SELECT employee_no,name From USER_ACCOUNT')
+        general_user=cur.fetchall()
+        
+        #表示するデータが綺麗に出力されるように前処理
+        #TODO(12/2):もうちょい具体的に何に何を格納・保存しているのかを書いてほしい work_status_tableが何なのかが分かりにくい
+        #DONE
+        #start_time_timeOnly:過去の勤務を開始した時刻を格納
+        #finish_time_timeOnly:過去の勤務を終了した時刻を格納
+        #break_start_time_timeOnly:過去の休憩開始時刻を格納
+        #break_finish_time_timeOnly:過去の休憩終了時刻を格納
+        #intervel_time:勤務間インターバル時間を格納
+        #approval_status:承認状態を格納
+        #TODO(12/3):work_status_tableの説明が冒頭とかにあると助かります 
+        #DONE:work_status_tableは過去の勤務時刻などを保存しているDB
+        for i in range(len(work_status_table)):
+                no.append(work_status_table[i][0])
+                employee_no.append(work_status_table[i][1])
+                day.append(work_status_table[i][2].day)
+                start_time_timeOnly.append(work_status_table[i][4].time())
+                finish_time_timeOnly.append(work_status_table[i][5].time())
+                if work_status_table[i][6]==None:
+                        break_start_time_timeOnly.append("0:00")
+                else:
+                        break_start_time_timeOnly.append(work_status_table[i][6].time())
+                if work_status_table[i][7]==None:
+                        break_finish_time_timeOnly.append("0:00")
+                else:
+                        break_finish_time_timeOnly.append(work_status_table[i][7].time())
+                interval_time.append(work_status_table[i][8])
+                approval_status.append(work_status_table[i][9])
+        for i in range(len(employee_no)):
+                for j in range(len(general_user)):
+                        if employee_no[i]==general_user[j][0]:
+                                name.append(general_user[j][1])
 
-                #セレクトボックスに表示する内容
-                work_status_table_length=len(work_status_table)
-                select1="承認待ちのみ"
-                selected_value1="./admin_daily_attendance2"
-                select2="全て表示"
-                selected_value2="./all_employee_display"
-                return render_template("admin_daily_attendance.html",admin_name=username_and_employeeno[0],admin_employee_no=username_and_employeeno[1],error=error[0],day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,selected_value1=selected_value1,select2=select2,selected_value2=selected_value2)
-        return redirect('/login')
+        #セレクトボックスに表示する内容
+        work_status_table_length=len(work_status_table)
+        select1="承認待ちのみ"
+        selected_value1="./admin_daily_attendance2"
+        select2="全て表示"
+        selected_value2="./all_employee_display"
+        return render_template("admin_daily_attendance.html",error=error[0],day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,selected_value1=selected_value1,select2=select2,selected_value2=selected_value2)
+
+        # return render_template("admin_daily_attendance.html",admin_name=username_and_employeeno[0],admin_employee_no=username_and_employeeno[1],error=error[0],day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,selected_value1=selected_value1,select2=select2,selected_value2=selected_value2)
+    # return redirect('/login2')
 
 #一般ユーザーが入力したログインIDとパスワードがDBに存在するかチェック
 @app.route('/login', methods=['GET', 'POST'])
@@ -313,15 +332,15 @@ def login2():
         #入力内容が正しければindex()に移ります。
         if request.method == 'POST':
                 
-                if admin_is_user_id_valid(request.form['userID'],request.form['password']):
-                        conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
+                if admin_is_user_id_valid(request.form['userID'],request.form['password']):#TODO:DBに対して何をしている？ DONE:管理者のユーザーID,パスワードを取ってきています
+                        # conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
                         
-                        conn.ping(reconnect=True)
-                        cur = conn.cursor(buffered=True)
-                        cur.execute('select loginID from ADMIN_USER_ACCOUNT where loginID= "' + str(request.form['userID']) + '";')
-                        user_id2=cur.fetchone()       
-                        session['user_id'] = user_id2
-                        print(session['user_id'][0])
+                        # conn.ping(reconnect=True)
+                        # cur = conn.cursor(buffered=True)
+                        # cur.execute('select loginID from ADMIN_USER_ACCOUNT where loginID= "' + str(request.form['userID']) + '";')
+                        # user_id2=cur.fetchone()       
+                        # session['user_id'] = user_id2
+                        # print(session['user_id'][0])
                         
                         return redirect(url_for('admin_daily_attendance'))
                 else:
@@ -357,9 +376,12 @@ def account_create():
         password_confirmation=request.form["password_confirmation"]
         # print(password)
         # print(password_confirmation)
+        #TODO(12/2):各if文がどんな場合なのかを軽くで良いので書いて欲しいなぁ
+        #DONE:パスワードとパスワード確認に入力されたものが一致しなかったら
         if str(password)!=str(password_confirmation):
                 error="パスワードが一致していません。"
                 return render_template('account_create.html',error=error)
+        #各項目に未入力の部分があったら
         if name=="" or employee_no=="" or employment_status=="" or department=="" or mail=="" or loginID=="" or password=="" or password_confirmation=="":
                 error="未入力の項目があります。"
                 return render_template('account_create.html',error=error)
@@ -408,13 +430,18 @@ def work_start():
         if request.method=="POST":
                 print("出勤")
                 conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
-                
+                #TODO(12/2):DBから何をPOSTしている？
                 conn.ping(reconnect=True)
                 cur = conn.cursor(buffered=True)
+                #勤務者の名前
                 name=request.form["name"]
+                #勤務者の社員番号
                 employee_no=request.form["employee_no"]
+                #勤務した日にち
                 date=request.form["date"]
+                #曜日
                 DayOfTheWeek=request.form["DayOfTheWeek"]
+                #勤務開始した時刻
                 datetime=request.form["datetime"]
                 print(date)
                 #ユーザーが存在するかチェック
@@ -472,13 +499,18 @@ def break_start():
         if request.method=="POST":
                 #print("休憩開始")
                 conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
-                
+                #TODO(12/2):DBから何をPOSTしているの？
                 conn.ping(reconnect=True)
                 cur = conn.cursor(buffered=True)
+                #勤務した人の名前
                 name=request.form["name"]
+                #勤務者の社員番号
                 employee_no=request.form["employee_no"]
+                #勤務した日にち
                 date=request.form["date"]
+                #曜日
                 DayOfTheWeek=request.form["DayOfTheWeek"]
+                #勤務終了時刻
                 datetime=request.form["datetime"]
                 #休憩開始できるかチェック
                 cur.execute('SELECT employee_no,break_start_time FROM WORK_STATUS WHERE WORK_STATUS.date=(SELECT MAX(date) from WORK_STATUS as ws WHERE ws.employee_no= "' + str(employee_no) + '" ) AND employee_no= "' + str(employee_no) + '" AND work_start_time IS NOT NULL AND break_finish_time IS NULL AND work_finish_time IS NULL AND break_start_time IS NULL')
@@ -505,13 +537,18 @@ def break_finish():
         if request.method=="POST":
                 # print("休憩終了")
                 conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
-                
+                #TODO(12/2):DBから何をPOSTしているでやんすか？
                 conn.ping(reconnect=True)
                 cur = conn.cursor(buffered=True)
+                #勤務者の名前
                 name=request.form["name"]
+                #勤務者の社員番号
                 employee_no=request.form["employee_no"]
+                #勤務した日にち
                 date=request.form["date"]
+                #曜日
                 DayOfTheWeek=request.form["DayOfTheWeek"]
+                #休憩終了時刻
                 datetime=request.form["datetime"]
                 #休憩終了できるかチェック
                 cur.execute('SELECT employee_no,break_finish_time FROM WORK_STATUS WHERE WORK_STATUS.date=(SELECT MAX(date) from WORK_STATUS as ws WHERE ws.employee_no= "' + str(employee_no) + '" ) AND employee_no= "' + str(employee_no) + '" AND work_start_time IS NOT NULL AND break_start_time IS NOT NULL AND work_finish_time IS NULL AND break_finish_time IS NULL')
@@ -539,11 +576,14 @@ def work_finish():
                 # print("勤務終了")
 
                 conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
-                
+                #TODO(12/2):DBから何をPOSTしているでゴワスか？
                 conn.ping(reconnect=True)
                 cur = conn.cursor(buffered=True)
+                #従業員の名前
                 name=request.form["name"]
+                #従業員の社員番号
                 employee_no=request.form["employee_no"]
+                #勤務終了時間
                 date=request.form["datetime"]
                 date = dt.datetime.strptime(date,'%Y/%m/%d %H:%M:%S') 
                 year=date.year
@@ -572,6 +612,7 @@ def work_finish():
                 user_status=cur.fetchone()
                 #退勤できる場合
                 if(user_status!=None):
+                        
                         error.append(None)
                         #退勤時刻を挿入することができるnoを探す
                         cur.execute('SELECT No,employee_no,break_finish_time FROM WORK_STATUS WHERE WORK_STATUS.date=(SELECT MAX(date) from WORK_STATUS as ws WHERE ws.employee_no= "' + str(employee_no) + '" ) AND employee_no= "' + str(employee_no) + '" AND work_start_time IS NOT NULL AND work_finish_time IS NULL AND (break_start_time IS NULL OR break_finish_time IS NOT NULL)')
@@ -633,17 +674,18 @@ def work_finish():
                         time_8hours=dt.timedelta(hours=hours, minutes=minutes,seconds=seconds)
                         time_8hours=time_8hours.total_seconds()
                         print(time_8hours)
+                        #TODO(12/2):この関数のここより下の各IF文が結果的に何を算出するかを各if文にコメントよろしく
                         if Scheduled_working_hours<time_8hours: #所定時間8時間未満の場合の法定時間外労働時間と法定時間内労働時間        
                                 # typeTime_today_actual_work_time=dt.datetime.strptime(str(today_actual_work_time),"%H:%M:%S")
                                 # typeTime_today_actual_work_time=typeTime_today_actual_work_time.time()
                                 # print(typeTime_today_actual_work_time)
                                 # print(today_actual_work_time)
-                                
+                                #法定時間内労働時間，法定時間外労働時間を算出
                                 if today_actual_work_time>Scheduled_working_hours and today_actual_work_time<time_8hours:
                                         Working_hours_within_legal_hours=working_hours_table[9]+(28800-today_actual_work_time) #法定時間内労働時間
                                         Overtime_working_hours=working_hours_table[10] #8時間を超えないで労働を終えたため、法定時間外労働時間は0
                                         
-                                        
+                                
                                 elif today_actual_work_time>Scheduled_working_hours and today_actual_work_time>time_8hours:
                                         Overtime_working_hours=working_hours_table[10]+(today_actual_work_time-28800) #法定時間外労働時間
                                         Working_hours_within_legal_hours=working_hours_table[9]+(today_actual_work_time-Scheduled_working_hours-Overtime_working_hours) #法定時間内労働時間
@@ -653,12 +695,14 @@ def work_finish():
                                 Overtime_working_hours=working_hours_table[10]
 
                         # print(DayOfTheWeek)
+                        #土曜日に働いた時間
                         if DayOfTheWeek=="土": #法定外休日
                                 cur.execute('UPDATE ATTENDANCE_STATUS SET Number_of_days_to_work_on_nonstatutory_holidays=Number_of_days_to_work_on_nonstatutory_holidays+1 WHERE employee_no="' + str(employee_no) + '"AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
                                 conn.commit()
                                 Nonstatutory_holiday_working_hours=working_hours_table[11]+today_actual_work_time
                         else:
                                 Nonstatutory_holiday_working_hours=working_hours_table[11]
+                        #日曜日に働いた時間
                         if DayOfTheWeek=="日": #法定休日
                                 cur.execute('UPDATE ATTENDANCE_STATUS SET Statutory_holiday_attendance_days=Statutory_holiday_attendance_days+1 WHERE employee_no="' + str(employee_no) + '"AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
                                 conn.commit()
@@ -676,6 +720,7 @@ def work_finish():
                         yesterday_t=dt.datetime(yesterday_year,yesterday_month2,yesterday_day,22, 00, 00)
                         # work_time=datetime-start
                         Midnight_working_hours=0
+                        #深夜労働時間を算出
                         if datetime > t or datetime < t2: #退勤時間が22h～5hの時
                                 if datetime < t2:                                       
                                         if today_actual_work_time>(datetime-yesterday_t).total_seconds():
@@ -754,6 +799,8 @@ def daily_attendance():
         attendance_status_table=cur.fetchone()
         
         #出勤状況を綺麗に表示するために前処理
+        #TODO(12/3):前処理の内容をもう少し具体的に欲しい
+        #html側に送るためにリストに出勤情報を格納しています
         for i in range(len(work_status_table)):
                 no.append(work_status_table[i][0])
                 day.append(work_status_table[i][2].day)
@@ -771,6 +818,8 @@ def daily_attendance():
                 interval_time.append(work_status_table[i][8])
                 approval_status.append(work_status_table[i][9])
         #勤務間インターバル時間が11時間未満かどうかチェック
+        #11時間未満の場合htmlで赤く表示する
+        #TODO(12/3):上記コメントに更にどんな場合どんな処理をするのかを軽く追記してほしい
         interval_time_check=[]
         if len(work_status_table)!=0:
                 cur.execute('SELECT MAX(work_finish_time) FROM WORK_STATUS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")= DATE_FORMAT(CURDATE() - INTERVAL 1 MONTH, "%Y%m") AND work_finish_time IS NOT NULL')
@@ -803,24 +852,31 @@ def daily_attendance():
         cur.execute('SELECT * FROM HOLIDAY_AND_VACATION_ACQUISITION WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         holiday_and_vacation_acquisition_table=cur.fetchone()
         cur.execute('SELECT * FROM WORKING_HOURS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
+        #TODO(12/3):for文では回せませんか？
+        #エラーがでると困るのでしない方が良いと思います
         working_hours_table=cur.fetchone()
         working_hours_list=[]
-        working_hours_list.append(working_hours_table[0])
-        working_hours_list.append(working_hours_table[1])
-        working_hours_list.append(working_hours_table[2])
-        working_hours_list.append(working_hours_table[3])
-        working_hours_list.append(int_to_HMS(working_hours_table[4]))
-        working_hours_list.append(int_to_HMS(working_hours_table[5]))
-        working_hours_list.append(working_hours_table[6])
-        working_hours_list.append(working_hours_table[7])
-        working_hours_list.append(int_to_HMS(working_hours_table[8]))
-        working_hours_list.append(int_to_HMS(working_hours_table[9]))
-        working_hours_list.append(int_to_HMS(working_hours_table[10]))
-        working_hours_list.append(int_to_HMS(working_hours_table[11]))
-        working_hours_list.append(int_to_HMS(working_hours_table[12]))
-        working_hours_list.append(int_to_HMS(working_hours_table[13]))
-        working_hours_list.append(int_to_HMS(working_hours_table[14]))
-        working_hours_list.append(int_to_HMS(working_hours_table[15]))
+        for i in range(len(working_hours_table)):
+                    if i==0 or i==1 or i==2 or i==3 or i==6 or i==7:
+                        working_hours_list.append(working_hours_table[i])
+                    else:
+                        working_hours_list.append(int_to_HMS(working_hours_table[i]))
+        # working_hours_list.append(working_hours_table[0])
+        # working_hours_list.append(working_hours_table[1])
+        # working_hours_list.append(working_hours_table[2])
+        # working_hours_list.append(working_hours_table[3])
+        # working_hours_list.append(int_to_HMS(working_hours_table[4]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[5]))
+        # working_hours_list.append(working_hours_table[6])
+        # working_hours_list.append(working_hours_table[7])
+        # working_hours_list.append(int_to_HMS(working_hours_table[8]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[9]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[10]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[11]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[12]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[13]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[14]))
+        # working_hours_list.append(int_to_HMS(working_hours_table[15]))
 
 
         cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
@@ -831,9 +887,11 @@ def daily_attendance():
 #月を進める(処理はdaily_attendanceとほぼ同じ)
 @app.route('/NextMonth',methods=['POST','GET'])
 def NextMonth():
+        #TODO(12/3):各if文にどんな場合にどんな結果を返すのかを書いてほしいDONE
         month=request.form["next"]
         year=request.form["year"]
         today = datetime.today()
+        #12月なら年を増やす
         if month=="12":
                 year=int(year)+1
         month = dt.datetime.strptime(month, '%m')
@@ -843,14 +901,25 @@ def NextMonth():
         lastmonth=dt.datetime(int(year),int(month),1)- relativedelta(months=1)
         print(lastmonth)
         lastmonth_month="%02d" % lastmonth.month
+        #TODO(12/3):listを定義する時は同じ個所にまとめて欲しい＆各リストの説明が軽くあると助かります DONE
+        #TODO(12/3):多用するリストなら関数毎ではなく全体で定義しちゃったら？ DONE:エラーが起きると直すのが大変だから後回し
+        #DBのid
         no=[]
+        #日付
         day=[]
+        #曜日
         DayOfTheWeek=[]
+        #出勤時刻
         start_time_timeOnly=[]
+        #退勤時刻
         finish_time_timeOnly=[]
+        #休憩開始時刻
         break_start_time_timeOnly=[]
+        #休憩終了時刻
         break_finish_time_timeOnly=[]
+        #勤務間インターバル
         interval_time=[]
+        #承認状態
         approval_status=[]
         conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
         
@@ -915,24 +984,30 @@ def NextMonth():
         # print(work_status_table)
         cur.execute('SELECT * FROM WORKING_HOURS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         working_hours_table=cur.fetchone()
+        #TODO(12/3):for文で回せない？
         if working_hours_table!=None:
                 working_hours_list=[]
-                working_hours_list.append(working_hours_table[0])
-                working_hours_list.append(working_hours_table[1])
-                working_hours_list.append(working_hours_table[2])
-                working_hours_list.append(working_hours_table[3])
-                working_hours_list.append(int_to_HMS(working_hours_table[4]))
-                working_hours_list.append(int_to_HMS(working_hours_table[5]))
-                working_hours_list.append(working_hours_table[6])
-                working_hours_list.append(working_hours_table[7])
-                working_hours_list.append(int_to_HMS(working_hours_table[8]))
-                working_hours_list.append(int_to_HMS(working_hours_table[9]))
-                working_hours_list.append(int_to_HMS(working_hours_table[10]))
-                working_hours_list.append(int_to_HMS(working_hours_table[11]))
-                working_hours_list.append(int_to_HMS(working_hours_table[12]))
-                working_hours_list.append(int_to_HMS(working_hours_table[13]))
-                working_hours_list.append(int_to_HMS(working_hours_table[14]))
-                working_hours_list.append(int_to_HMS(working_hours_table[15]))
+                for i in range(len(working_hours_table)):
+                    if i==0 or i==1 or i==2 or i==3 or i==6 or i==7:
+                        working_hours_list.append(working_hours_table[i])
+                    else:
+                        working_hours_list.append(int_to_HMS(working_hours_table[i]))
+                # working_hours_list.append(working_hours_table[0])
+                # working_hours_list.append(working_hours_table[1])
+                # working_hours_list.append(working_hours_table[2])
+                # working_hours_list.append(working_hours_table[3])
+                # working_hours_list.append(int_to_HMS(working_hours_table[4]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[5]))
+                # working_hours_list.append(working_hours_table[6])
+                # working_hours_list.append(working_hours_table[7])
+                # working_hours_list.append(int_to_HMS(working_hours_table[8]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[9]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[10]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[11]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[12]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[13]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[14]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[15]))
         else:
                 working_hours_list=cur.fetchone()
         cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
@@ -956,7 +1031,7 @@ def LastMonth():
         lastmonth=dt.datetime(int(year),int(month),1)- relativedelta(months=1)
         print(lastmonth)
         lastmonth_month="%02d" % lastmonth.month
-
+        #TODO(12/3):listを定義する時は同じ個所にまとめて欲しい＆各リストの説明が軽くあると助かります
         no=[]
         day=[]
         DayOfTheWeek=[]
@@ -978,16 +1053,18 @@ def LastMonth():
         cur.execute('SELECT * FROM ATTENDANCE_STATUS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         attendance_status_table=cur.fetchone()
         print(attendance_status_table)
-
+        #TODO(12/3):各if文がどんな場合にどんな結果を返す？
         for i in range(len(work_status_table)):
                 day.append(work_status_table[i][2].day)
                 DayOfTheWeek.append(work_status_table[i][3])
                 start_time_timeOnly.append(work_status_table[i][4].time())
                 finish_time_timeOnly.append(work_status_table[i][5].time())
+                #休憩開始時間がなければ
                 if work_status_table[i][6]==None:
                         break_start_time_timeOnly.append("0:00")
                 else:
                         break_start_time_timeOnly.append(work_status_table[i][6].time())
+                #休憩終了時間がなければ
                 if work_status_table[i][7]==None:
                         break_finish_time_timeOnly.append("0:00")
                 else:
@@ -1026,25 +1103,29 @@ def LastMonth():
         holiday_and_vacation_acquisition_table=cur.fetchone()
         cur.execute('SELECT * FROM WORKING_HOURS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         working_hours_table=cur.fetchone()
-
-        if working_hours_table!=None:
+        if working_hours_table!=None:#TODO(12/1):脳筋ぽい、もうちょいなんとかなんない？#TODO(12/3):for文でいけない？
                 working_hours_list=[]
-                working_hours_list.append(working_hours_table[0])
-                working_hours_list.append(working_hours_table[1])
-                working_hours_list.append(working_hours_table[2])
-                working_hours_list.append(working_hours_table[3])
-                working_hours_list.append(int_to_HMS(working_hours_table[4]))
-                working_hours_list.append(int_to_HMS(working_hours_table[5]))
-                working_hours_list.append(working_hours_table[6])
-                working_hours_list.append(working_hours_table[7])
-                working_hours_list.append(int_to_HMS(working_hours_table[8]))
-                working_hours_list.append(int_to_HMS(working_hours_table[9]))
-                working_hours_list.append(int_to_HMS(working_hours_table[10]))
-                working_hours_list.append(int_to_HMS(working_hours_table[11]))
-                working_hours_list.append(int_to_HMS(working_hours_table[12]))
-                working_hours_list.append(int_to_HMS(working_hours_table[13]))
-                working_hours_list.append(int_to_HMS(working_hours_table[14]))
-                working_hours_list.append(int_to_HMS(working_hours_table[15]))
+                for i in range(len(working_hours_table)):
+                    if i==0 or i==1 or i==2 or i==3 or i==6 or i==7:
+                        working_hours_list.append(working_hours_table[i])
+                    else:
+                        working_hours_list.append(int_to_HMS(working_hours_table[i]))
+                # working_hours_list.append(working_hours_table[0])
+                # working_hours_list.append(working_hours_table[1])
+                # working_hours_list.append(working_hours_table[2])
+                # working_hours_list.append(working_hours_table[3])
+                # working_hours_list.append(int_to_HMS(working_hours_table[4]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[5]))
+                # working_hours_list.append(working_hours_table[6])
+                # working_hours_list.append(working_hours_table[7])
+                # working_hours_list.append(int_to_HMS(working_hours_table[8]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[9]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[10]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[11]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[12]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[13]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[14]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[15]))
         else:
                 working_hours_list=cur.fetchone()
         cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
@@ -1091,18 +1172,18 @@ def admin_NextMonth():
         work_status_table=cur.fetchall()
         cur.execute('SELECT employee_no,name From USER_ACCOUNT')
         general_user=cur.fetchall()
-        
+        #TODO(12/3):各if文がどんな場合にどんな結果を返す？
         for i in range(len(work_status_table)):
                 no.append(work_status_table[i][0])
                 employee_no.append(work_status_table[i][1])
                 day.append(work_status_table[i][2].day)
                 start_time_timeOnly.append(work_status_table[i][4].time())
                 finish_time_timeOnly.append(work_status_table[i][5].time())
-                if work_status_table[i][6]==None:
+                if work_status_table[i][6]==None:#休憩をしていないならば，0時間
                         break_start_time_timeOnly.append("0:00")
                 else:
                         break_start_time_timeOnly.append(work_status_table[i][6].time())
-                if work_status_table[i][7]==None:
+                if work_status_table[i][7]==None:#休憩をしていないならば，0時間
                         break_finish_time_timeOnly.append("0:00")
                 else:
                         break_finish_time_timeOnly.append(work_status_table[i][7].time())
@@ -1154,18 +1235,18 @@ def admin_LastMonth():
         work_status_table=cur.fetchall()
         cur.execute('SELECT employee_no,name From USER_ACCOUNT')
         general_user=cur.fetchall()
-        
+        #TODO(12/3):各if文がどんな場合にどんな結果を返す？
         for i in range(len(work_status_table)):
                 no.append(work_status_table[i][0])
                 employee_no.append(work_status_table[i][1])
                 day.append(work_status_table[i][2].day)
                 start_time_timeOnly.append(work_status_table[i][4].time())
                 finish_time_timeOnly.append(work_status_table[i][5].time())
-                if work_status_table[i][6]==None:
+                if work_status_table[i][6]==None:#休憩をしていないならば，0時間
                         break_start_time_timeOnly.append("0:00")
                 else:
                         break_start_time_timeOnly.append(work_status_table[i][6].time())
-                if work_status_table[i][7]==None:
+                if work_status_table[i][7]==None:#休憩をしていないならば，0時間
                         break_finish_time_timeOnly.append("0:00")
                 else:
                         break_finish_time_timeOnly.append(work_status_table[i][7].time())
@@ -1248,18 +1329,18 @@ def update():
         print(work_status_table)
         cur.execute('SELECT * FROM ATTENDANCE_STATUS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         attendance_status_table=cur.fetchone()
-
+        #TODO(12/3):各if文がどんな場合にどんな結果を返す？
         for i in range(len(work_status_table)):
                 no.append(work_status_table[i][0])
                 day.append(work_status_table[i][2].day)
                 DayOfTheWeek.append(work_status_table[i][3])
                 start_time_timeOnly.append(work_status_table[i][4].time())
                 finish_time_timeOnly.append(work_status_table[i][5].time())
-                if work_status_table[i][6]==None:
+                if work_status_table[i][6]==None:#休憩をしていないならば，0時間
                         break_start_time_timeOnly.append("0:00")
                 else:
                         break_start_time_timeOnly.append(work_status_table[i][6].time())
-                if work_status_table[i][7]==None:
+                if work_status_table[i][7]==None:#休憩をしていないならば，0時間
                         break_finish_time_timeOnly.append("0:00")
                 else:
                         break_finish_time_timeOnly.append(work_status_table[i][7].time())
@@ -1270,8 +1351,8 @@ def update():
         if len(work_status_table)!=0:
                 cur.execute('SELECT MAX(work_finish_time) FROM WORK_STATUS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(lastmonth.year)+str(lastmonth_month)+'"  AND work_finish_time IS NOT NULL')
                 lastmonth_work_status=cur.fetchone()
-                if lastmonth_work_status[0]!=None:
-                        if work_status_table[0][4]-lastmonth_work_status[0]<timedelta(hours=11):
+                if lastmonth_work_status[0]!=None:#この日にちの前に出勤記録があるならば
+                        if work_status_table[0][4]-lastmonth_work_status[0]<timedelta(hours=11):#勤務インターバルが11時間未満の場合
                                 interval_time_check.append(1)
                         else:
                                 interval_time_check.append(0)
@@ -1298,24 +1379,29 @@ def update():
         holiday_and_vacation_acquisition_table=cur.fetchone()
         cur.execute('SELECT * FROM WORKING_HOURS WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         working_hours_table=cur.fetchone()
-        if working_hours_table!=None:
+        if working_hours_table!=None:#TODO(12/1):脳筋ぽい、もうちょいなんとかなんない？#TODO(12/3):for文回せない？
                 working_hours_list=[]
-                working_hours_list.append(working_hours_table[0])
-                working_hours_list.append(working_hours_table[1])
-                working_hours_list.append(working_hours_table[2])
-                working_hours_list.append(working_hours_table[3])
-                working_hours_list.append(int_to_HMS(working_hours_table[4]))
-                working_hours_list.append(int_to_HMS(working_hours_table[5]))
-                working_hours_list.append(working_hours_table[6])
-                working_hours_list.append(working_hours_table[7])
-                working_hours_list.append(int_to_HMS(working_hours_table[8]))
-                working_hours_list.append(int_to_HMS(working_hours_table[9]))
-                working_hours_list.append(int_to_HMS(working_hours_table[10]))
-                working_hours_list.append(int_to_HMS(working_hours_table[11]))
-                working_hours_list.append(int_to_HMS(working_hours_table[12]))
-                working_hours_list.append(int_to_HMS(working_hours_table[13]))
-                working_hours_list.append(int_to_HMS(working_hours_table[14]))
-                working_hours_list.append(int_to_HMS(working_hours_table[15]))
+                for i in range(len(working_hours_table)):
+                    if i==0 or i==1 or i==2 or i==3 or i==6 or i==7:
+                        working_hours_list.append(working_hours_table[i])
+                    else:
+                        working_hours_list.append(int_to_HMS(working_hours_table[i]))
+                # working_hours_list.append(working_hours_table[0])
+                # working_hours_list.append(working_hours_table[1])
+                # working_hours_list.append(working_hours_table[2])
+                # working_hours_list.append(working_hours_table[3])
+                # working_hours_list.append(int_to_HMS(working_hours_table[4]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[5]))
+                # working_hours_list.append(working_hours_table[6])
+                # working_hours_list.append(working_hours_table[7])
+                # working_hours_list.append(int_to_HMS(working_hours_table[8]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[9]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[10]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[11]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[12]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[13]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[14]))
+                # working_hours_list.append(int_to_HMS(working_hours_table[15]))
         else:
                 working_hours_list=cur.fetchone()
         cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(user[1]) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
@@ -1364,17 +1450,18 @@ def approval():
         work_status_table=cur.fetchall()
         cur.execute('SELECT employee_no,name From USER_ACCOUNT')
         general_user=cur.fetchall()
+        #TODO(12/9):各if文が各if文がどんな場合にどんな結果を返す？
         for i in range(len(work_status_table)):
                 no.append(work_status_table[i][0])
                 employee_no.append(work_status_table[i][1])
                 day.append(work_status_table[i][2].day)
                 start_time_timeOnly.append(work_status_table[i][4].time())
                 finish_time_timeOnly.append(work_status_table[i][5].time())
-                if work_status_table[i][6]==None:
+                if work_status_table[i][6]==None:#休憩をしていないならば，0時間
                         break_start_time_timeOnly.append("0:00")
                 else:
                         break_start_time_timeOnly.append(work_status_table[i][6].time())
-                if work_status_table[i][7]==None:
+                if work_status_table[i][7]==None:#休憩をしていないならば，0時間
                         break_finish_time_timeOnly.append("0:00")
                 else:
                         break_finish_time_timeOnly.append(work_status_table[i][7].time())
@@ -1383,17 +1470,17 @@ def approval():
         work_status_table_length=len(work_status_table)
         for i in range(len(employee_no)):
                         for j in range(len(general_user)):
-                                if employee_no[i]==general_user[j][0]:
+                                if employee_no[i]==general_user[j][0]:#一般社員の社員番号がDBにあったら
                                         name.append(general_user[j][1])
         return render_template('admin_daily_attendance.html',admin_name=username_and_employeeno[0],admin_employee_no=username_and_employeeno[1],day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no)
-#admin_edit.htmlへ遷移
+#admin_edit.html(一般ユーザーの総労働時間を編集するためにユーザーの名前などを検索する画面)へ遷移 ()は12/9に追記
 @app.route('/admin_edit',methods=['POST','GET'])
 def admin_edit():
+        error=[]
         today = datetime.today()
-        year=today.year
         month=today.month
         month="%02d" % month
-        return render_template('admin_edit.html',year=year,month=month)
+        return render_template('admin_edit.html',year=year,month=month,error=error)
 #編集先の検索(管理者側の処理)
 @app.route('/edit',methods=['POST','GET'])
 def edit():
@@ -1409,7 +1496,7 @@ def edit():
         cur = conn.cursor(buffered=True)
         if check=="off": #押されていない場合、入力欄に入力されたユーザーの出勤状況の詳細を取得する
                 cur.execute('select employee_no,name from USER_ACCOUNT')
-                user=cur.fetchall()    
+                user=cur.fetchall()
                 for i in range(len(user)):
                         if str(user[i][0]) == str(employee_no) and str(user[i][1]) == str(name):
                                 cur.execute('SELECT * FROM HOLIDAY_AND_VACATION_ACQUISITION WHERE employee_no="' + str(employee_no) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
@@ -1422,7 +1509,8 @@ def edit():
                                 working_hours_table=cur.fetchone()
                                 cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(employee_no) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
                                 work_classification_table=cur.fetchone()
-                                if working_hours_table!=None:
+                                #TODO(12/9):このif文はどんな時に何を返す
+                                if working_hours_table!=None:#Noneじゃなければhour,minute,secondをそれぞれlistに格納
                                         working_hours=[]
                                         working_minutes=[]
                                         working_seconds=[]
@@ -1438,7 +1526,7 @@ def edit():
                                                 working_minutes.append(minutes)
                                                 working_seconds.append(seconds)
                                         
-                                else:
+                                else:#Noneなら0をappend
                                         working_hours=[]
                                         working_minutes=[]
                                         working_seconds=[]
@@ -1452,7 +1540,7 @@ def edit():
                                 return render_template('edit_attendance_status.html',name=name,employee_no=employee_no,year=year,month=month,holiday_and_vacation_acquisition_table=holiday_and_vacation_acquisition_table,work_classification_table=work_classification_table,working_hours=working_hours,working_minutes=working_minutes,working_seconds=working_seconds,attendance_status_table=attendance_status_table)
                 
                 error.append("入力された社員は存在しませんでした。")
-        #押された場合、全従業員の出勤状況の詳細を取得
+       #押された場合、全従業員の出勤状況の詳細を取得
         elif check=="on":
                 cur.execute('SELECT SUM(Number_of_days_to_work),SUM(Number_of_days_to_work_on_nonstatutory_holidays),SUM(Statutory_holiday_attendance_days),SUM(Days_of_absence),SUM(Late_days),SUM(Number_of_early_departures) FROM ATTENDANCE_STATUS WHERE DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
                 all_attendance_status_table=cur.fetchone()
@@ -1471,8 +1559,10 @@ def edit():
                 Late_time=0
                 Early_departure_time=0
                 all_working_hours_list=[]
+                #TODO質問
+                #全従業員の勤務情報の計算処理
                 if all_working_hours_table!=None:
-                        for i in range(len(all_working_hours_table)):
+                        for i in range(len(all_working_hours_table)):#TODO(12/9):それぞれ何を算出しているのかコメント必要かも
                                 Total_working_hours=Total_working_hours+all_working_hours_table[i][0]
                                 Actual_working_hours=Actual_working_hours+all_working_hours_table[i][1]
                                 Overtime_hours=Overtime_hours+all_working_hours_table[i][2]
@@ -1483,7 +1573,7 @@ def edit():
                                 Midnight_working_hours=Midnight_working_hours+all_working_hours_table[i][7]
                                 Late_time=Late_time+all_working_hours_table[i][8]
                                 Early_departure_time=Early_departure_time+all_working_hours_table[i][9]
-
+                #TODO(12/9):ここfor文でいけない？
                 all_working_hours_list.append(int_to_HMS(Total_working_hours))
                 all_working_hours_list.append(int_to_HMS(Actual_working_hours))
                 all_working_hours_list.append(int_to_HMS(Overtime_hours))
@@ -1500,10 +1590,11 @@ def edit():
                         return render_template('allemployee_workingtime.html',year=year,month=month,working_hours_table=all_working_hours_list,attendance_status_table=all_attendance_status_list)
                 return render_template('allemployee_workingtime.html',year=year,month=month,working_hours_table=all_working_hours_list,attendance_status_table=all_attendance_status_table)
 
-                          
+        print(error)
         return render_template('admin_edit.html',year=year,month=month,error=error)
 
-#月を進める(allemployee_workingtime.html 処理はedit elif check==on以下とほぼ同じ)
+#"従業員全体の勤務状況を見る"場合の月を進める(allemployee_workingtime.html 処理はedit elif check==on以下とほぼ同じ)
+#TODO(12/9):↑何の画面での月を進める？
 @app.route('/all_NextMonth',methods=['POST','GET'])
 def all_NextMonth():
         year=request.form["year"]
@@ -1536,6 +1627,8 @@ def all_NextMonth():
         Late_time=0
         Early_departure_time=0
         all_working_hours_list=[]
+        #TODO質問
+        #全従業員の勤務情報の計算処理
         if all_working_hours_table!=None:
                 for i in range(len(all_working_hours_table)):
                         Total_working_hours=Total_working_hours+all_working_hours_table[i][0]
@@ -1548,7 +1641,7 @@ def all_NextMonth():
                         Midnight_working_hours=Midnight_working_hours+all_working_hours_table[i][7]
                         Late_time=Late_time+all_working_hours_table[i][8]
                         Early_departure_time=Early_departure_time+all_working_hours_table[i][9]
-
+        #TODO(12/9):for文でまわせない？
         all_working_hours_list.append(int_to_HMS(Total_working_hours))
         all_working_hours_list.append(int_to_HMS(Actual_working_hours))
         all_working_hours_list.append(int_to_HMS(Overtime_hours))
@@ -1567,7 +1660,8 @@ def all_NextMonth():
 
         return render_template('allemployee_workingtime.html',year=year,month=month,working_hours_table=all_working_hours_list,attendance_status_table=all_attendance_status_table)
 
-#月を戻す(allemployee_workingtime.html 処理はedit elif check==on以下とほぼ同じ)
+#"従業員全体の勤務状況を見る"場合の月を戻す(allemployee_workingtime.html 処理はedit elif check==on以下とほぼ同じ)
+#TODO(12/9):↑何の画面での月を戻す？
 @app.route('/all_LastMonth',methods=['POST','GET'])
 def all_LastMonth():        
         year=request.form["year"]
@@ -1601,6 +1695,8 @@ def all_LastMonth():
         Late_time=0
         Early_departure_time=0
         all_working_hours_list=[]
+        #TODO質問
+        #全従業員の勤務情報の計算処理
         if all_working_hours_table!=None:
                 for i in range(len(all_working_hours_table)):
                         Total_working_hours=Total_working_hours+all_working_hours_table[i][0]
@@ -1613,7 +1709,7 @@ def all_LastMonth():
                         Midnight_working_hours=Midnight_working_hours+all_working_hours_table[i][7]
                         Late_time=Late_time+all_working_hours_table[i][8]
                         Early_departure_time=Early_departure_time+all_working_hours_table[i][9]
-
+        #TODO(12/9):for文まわせない？
         all_working_hours_list.append(int_to_HMS(Total_working_hours))
         all_working_hours_list.append(int_to_HMS(Actual_working_hours))
         all_working_hours_list.append(int_to_HMS(Overtime_hours))
@@ -1633,6 +1729,7 @@ def all_LastMonth():
         return render_template('allemployee_workingtime.html',year=year,month=month,working_hours_table=all_working_hours_list,attendance_status_table=all_attendance_status_table)
 
 #月を進める(edit_attendance_status.html 処理はedit if check==off以下とほぼ同じ)
+#TODO(12/9):↑何の画面での月を進める？
 @app.route('/admin_edit_NextMonth',methods=['POST','GET'])
 def admin_edit_NextMonth():
         error=[]
@@ -1665,6 +1762,9 @@ def admin_edit_NextMonth():
         cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(employee_no) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         work_classification_table=cur.fetchone()
         # print(working_hours_table)
+        #TODO(12/9):各if文が各if文がどんな場合にどんな結果を返す？
+        #TODO質問
+        #所定時間及び所定内労働時間の取得
         if working_hours_table!=None:
                 working_hours=[]
                 working_minutes=[]
@@ -1696,6 +1796,7 @@ def admin_edit_NextMonth():
                 
 
 #月を戻す(edit_attendance_status.html 処理はedit if check==off以下とほぼ同じ)
+#TODO(12/9):↑何の画面での月を戻す？
 @app.route('/admin_edit_LastMonth',methods=['POST','GET'])
 def admin_edit_LastMonth():
         error=[]
@@ -1728,6 +1829,9 @@ def admin_edit_LastMonth():
         cur.execute('SELECT * FROM WORK_CLASSIFICATION WHERE employee_no="' + str(employee_no) + '" AND DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'"')
         work_classification_table=cur.fetchone()
         # print(working_hours_table)
+        #TODO(12/9):各if文が各if文がどんな場合にどんな結果を返す？
+        #TODO
+        #所定時間及び所定内労働時間の取得
         if working_hours_table!=None:
                 working_hours=[]
                 working_minutes=[]
@@ -1743,7 +1847,7 @@ def admin_edit_LastMonth():
                         working_hours.append(hours)
                         working_minutes.append(minutes)
                         working_seconds.append(seconds)
-                
+        #TODO質問        
         else:
                 working_hours=[]
                 working_minutes=[]
@@ -1769,12 +1873,18 @@ def admin_modify():
 
         working_hours_table=[]
         for i in range(len(working_hours)):
-
+                #TODO(12/9):各if文が各if文がどんな場合にどんな結果を返す？#TODO質問
+                #所定時間及び所定内労働時間をstrからintに直す
                 if i==2 or i==3:
+                        #print(working_hours[i])
+                        #print(working_minutes[i])
                         time=dt.timedelta(hours=int(working_hours[i]), minutes=int(working_minutes[i]))
+                        
                         time=time.total_seconds()
+
                         time=int_to_HM(time)
-                        working_hours_table.append(time)
+                        print(time)
+                        working_hours_table.append(str(time))
                 else:
                         time=dt.timedelta(hours=int(working_hours[i]), minutes=int(working_minutes[i]),seconds=int(working_seconds[i]))
                         working_hours_table.append(time.total_seconds())
@@ -1783,7 +1893,7 @@ def admin_modify():
         employee_no=request.form["employee_no"]
         year=request.form["year"]
         month=request.form["month2"]
-        print(holiday_and_vacation_acquisition_table)
+        print(working_hours_table)
         conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
         
         conn.ping(reconnect=True)
@@ -1814,7 +1924,9 @@ def admin_modify():
 
         return render_template('edit_attendance_status.html',name=name,employee_no=employee_no,year=year,month=month,holiday_and_vacation_acquisition_table=holiday_and_vacation_acquisition_table,work_classification_table=work_classification_table,working_hours=working_hours,working_minutes=working_minutes,working_seconds=working_seconds,attendance_status_table=attendance_status_table)
 
-#daily_attendance_registration.htmlで変更された内容を更新(一般ユーザー側)
+#daily_attendance_registration.htmlで変更された内容を更新(一般ユーザー側)/
+#日時勤怠で鉛筆ボタンを押したときの編集画面(daily_attendance_registration)で登録ボタンを押した場合の更新処理
+#TODO(12/9):↑何の画面の時？どんな時に更新される？
 @app.route('/modify',methods=['POST','GET'])
 def modify():
         conn=mysql.connector.connect(user='admin',password='alicealice',host='dakokukun.cfkjffrk4iv5.ap-northeast-1.rds.amazonaws.com',database='dakokukun',port=3306)
@@ -1846,6 +1958,9 @@ def modify():
 
         work_start_time=dt.datetime(date.year,date.month,date.day,int(work_start_hour), int(work_start_minute), 00)
         work_finish_time=dt.datetime(date.year,date.month,date.day,int(work_finish_hour), int(work_finish_minute), 00)
+        #TODO(12/9):ここより下は従業員に関わる全データを更新している？
+        #TODO(12/9):各if文がどんな場合にどんな結果を返す？#TODO質問
+        #休憩時間があった場合
         if break_start_hour!="" or break_start_minute!="" or break_finish_hour!="" or break_finish_minute!="":
                 break_start_time=dt.datetime(date.year,date.month,date.day,int(break_start_hour), int(break_start_minute), 00)
                 break_finish_time=dt.datetime(date.year,date.month,date.day,int(break_finish_hour), int(break_finish_minute,00), 00)
@@ -1862,15 +1977,18 @@ def modify():
         #更新前データの計算
         work_time=work_status_table[1]-work_status_table[0] #労働時間old
         work_time_sec=work_time.total_seconds()
-        
+        #TODO質問
+        #休憩時間がなかった場合
         if work_status_table[2]==None and work_status_table[3]==None:
                 actual_work_time=work_time_sec #old
+        #休憩時間があった場合、実働時間を算出
         elif work_status_table[2]!=None and work_status_table[3]!=None:
                 break_time=work_status_table[3]-work_status_table[2]
                 break_time_sec=break_time.total_seconds()
                 actual_work_time=work_time_sec-break_time_sec #old
         
-                  
+        #TODO質問
+        #残業時間の算出        
         if actual_work_time>28800:
                 overtime_hours=actual_work_time_sec-28800 #old
                 overtime_working_hours=actual_work_time-28800 #old
@@ -1924,30 +2042,38 @@ def modify():
         t2=dt.datetime(date.year,date.month,date.day,5, 00, 00)
         yesterday_t=dt.datetime(yesterday_year,yesterday_month2,yesterday_day,22, 00, 00)
         Midnight_working_hours=0
-
         if work_status_table[1] > t or work_status_table[1]< t2: #退勤時間が22h～5hの時
-                if work_status_table[1] < t2:                                       
+        #TODO質問#work_status_table[1]は退勤時間/
+                #退勤時間が0:00~5:00の場合
+                if work_status_table[1] < t2:          
+                        #勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)                             
                         if actual_work_time>(work_status_table[1]-yesterday_t).total_seconds():
                                 Midnight_working_hours=work_status_table[1]-yesterday_t
                                 Midnight_working_hours=Midnight_working_hours.total_seconds()
+                        #勤務開始時間が22:00後の場合(深夜労働時間を算出)/実働時間内に深夜労働しかない場合
                         elif actual_work_time<=(work_status_table[1]-yesterday_t).total_seconds():
                                 Midnight_working_hours=actual_work_time
+        #TODO質問
+                #退勤時間が22:00~24:00の場合
                 if work_status_table[1] > t:
+                    　　#勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)
                         if actual_work_time>(work_status_table[1]-t).total_seconds():
                                 Midnight_working_hours=work_status_table[1]-t
                                 Midnight_working_hours=Midnight_working_hours.total_seconds()
+                        #勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)
                         elif actual_work_time<=(work_status_table[1]-t).total_seconds():
                                 Midnight_working_hours=actual_work_time
-
-        elif work_status_table[1] > t2 and t2>work_status_table[0]>yesterday_t:
+        #TODO質問#出勤時間が0:00~5:00で退勤が5:00~の場合
+        elif work_status_table[1] > t2 and t2 > work_status_table[0]>yesterday_t:
                 Midnight_working_hours=t2-work_start_time
                 Midnight_working_hours=Midnight_working_hours.total_seconds()
-
+        #TODO質問#深夜時間帯をフルで働いた場合
         elif work_status_table[0].date()!=work_status_table[1].date():
+                #休憩時間が無しの場合
                 if work_status_table[2]==None and work_status_table[3]==None:
                         Midnight_working_hours=dt.timedelta(hours=7)
                         Midnight_working_hours=Midnight_working_hours.total_seconds()
-
+                #休憩時間が有りの場合
                 elif work_status_table[2]!=None and work_status_table[3]!=None:
                         Midnight_working_hours=dt.timedelta(hours=7)-(work_status_table[3]-work_status_table[2])
                         Midnight_working_hours=Midnight_working_hours.total_seconds()
@@ -1956,16 +2082,20 @@ def modify():
         
 
 
-        #更新後データの計算
+        #更新後データの計算/これ以降は更新後の計算処理
         cur.execute('SELECT MAX(work_finish_time) from WORK_STATUS WHERE No<"' + str(no) + '" AND employee_no="' + str(employee_no) + '"')
         befor_work_finish_time=cur.fetchone()
         cur.execute('SELECT No,MIN(work_start_time) from WORK_STATUS WHERE No>"' + str(no) + '" AND employee_no="' + str(employee_no) + '"')
         next_work_start_time=cur.fetchone()
+        #TODO(12/9):各if文はどんな時にどんな結果を返す？
+        #TODO質問
+        #インターバルタイム計算
         if befor_work_finish_time[0]!=None:
                 interval_time=work_start_time-befor_work_finish_time[0]
         else:
                 interval_time="0:00"
-
+        #TODO質
+        #次の日のインターバルタイム計算
         if next_work_start_time[1]!=None:
                 next_interval_time=next_work_start_time[1]-work_finish_time
         else:
@@ -1974,16 +2104,19 @@ def modify():
         new_work_time=work_finish_time-work_start_time
         new_work_time_sec=new_work_time.total_seconds()
         new_total_work_time=new_work_time_sec+working_hours_table[4]-work_time_sec
-        
+        #TODO質問
+        #実働時間の計算(休憩時間あり)
         if break_start_time==0 and break_finish_time==0:
                 new_actual_work_time=new_work_time_sec
                 new_total_actual_work_time=working_hours_table[5]+new_actual_work_time-actual_work_time
+        #実働時間の計算(休憩時間無し)
         elif break_start_time!=0 and break_finish_time!=0:
                 new_break_time=break_finish_time-break_start_time
                 new_break_time_sec=new_break_time.total_seconds()
                 new_actual_work_time=new_work_time_sec-new_break_time_sec
                 new_total_actual_work_time=working_hours_table[5]+new_actual_work_time-actual_work_time
-
+        #TODO質問
+        #残業時間計算
         if new_actual_work_time>28800:
                 new_overtime_hours=new_actual_work_time-28800 #new
                 new_overtime_hours=working_hours_table[8]+new_overtime_hours-over_time_hours
@@ -1994,22 +2127,24 @@ def modify():
                 new_overtime_hours=working_hours_table[8] #new
                 new_overtime_working_hours=working_hours_table[10] #new
 
-
+        #TODO質問
         if Scheduled_working_hours<time_8hours: #所定時間8時間未満の場合の法定時間外労働時間と法定時間内労働時間
                 # typeTime_new_actual_work_time=dt.datetime.strptime(str(new_actual_work_time),"%H:%M:%S")
                 # typeTime_new_actual_work_time=typeTime_new_actual_work_time.time()
-               
+               　#TODO質問
+                #所定時間が8時間以下の時(Scheduled_working_hours)に勤務時間が8時間未満の場合
                 if new_actual_work_time>Scheduled_working_hours and new_actual_work_time<time_8hours:
                         new_working_hours_within_legal_hours=28800-new_actual_work_time #new法定時間内労働時間
                         new_working_hours_within_legal_hours=working_hours_table[9]+new_working_hours_within_legal_hours-working_hours_within_legal_hours
                         new_overtime_working_hours=working_hours_table[10] #8時間を超えないで労働を終えたため、法定時間外労働時間は0
-
+                #TODO質問
+                #所定時間が8時間以下時(Scheduled_working_hours)に勤務時間が8時間以上の場合
                 elif new_today_actual_work_time>Scheduled_working_hours and new_today_actual_work_time>time_8hours:
                         new_overtime_working_hours=new_actual_work_time-28800 #法定時間外労働時間
                         new_overtime_working_hours=working_hours_table[10]+new_overtime_working_hours-overtime_working_hours
                         new_working_hours_within_legal_hours=new_actual_work_time-Scheduled_working_hours-new_overtime_working_hours #new法定時間内労働時間
                         new_working_hours_within_legal_hours=working_hours_table[9]+new_working_hours_within_legal_hours-working_hours_within_legal_hours
-
+        #TODO質問
         else:
                 new_working_hours_within_legal_hours=working_hours_table[9]
                 new_overtime_working_hours=[10]
@@ -2030,38 +2165,47 @@ def modify():
         # t2=dt.datetime(date.year,month2,day,5, 00, 00)
         # yesterday_t=dt.datetime(yesterday_year,yesterday_month2,yesterday_day,22, 00, 00)
         new_Midnight_working_hours=0
-
+        #TODO質問
+        #深夜労働時間の計算
         if work_finish_time > t or work_finish_time< t2: #退勤時間が22h～5hの時
-                if work_finish_time < t2:                                       
+                #退勤時間が22:00~24:00の場合
+                if work_finish_time < t2:
+                        #勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)                                       
                         if new_actual_work_time>(work_finish_time-yesterday_t).total_seconds():
                                 new_Midnight_working_hours=work_finish_time-yesterday_t
                                 new_Midnight_working_hours=new_Midnight_working_hours.total_seconds()
+                        #勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)
                         elif new_actual_work_time<=(work_finish_time-yesterday_t).total_seconds():
                                 new_Midnight_working_hours=new_actual_work_time
+                #出勤時間が0:00~5:00で退勤が5:00~の場合
                 if work_finish_time > t:
+                        #勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)     
                         if new_actual_work_time>(work_finish_time-t).total_seconds():
                                 new_Midnight_working_hours=work_finish_time-t
                                 new_Midnight_working_hours=new_Midnight_working_hours.total_seconds()
-
+                        #勤務開始時間が22:00前の場合(実働時間内の深夜労働時間を算出)
                         elif new_actual_work_time<=(work_finish_time-t).total_seconds():
                                 new_Midnight_working_hours=new_actual_work_time
 
-
+        #TODO質問
         elif work_finish_time > t2 and t2>work_start_time>yesterday_t:
                 new_Midnight_working_hours=t2-work_start_time
                 new_Midnight_working_hours=new_Midnight_working_hours.total_seconds()
-
+        #TODO質問
+        #深夜時間帯をフルで働いた場合
         elif work_start_time.date()!=work_finish_time.date():
+                #休憩時間が無しの場合
                 if break_start_time==None and break_finish_time==None:
                         new_Midnight_working_hours=dt.timedelta(hours=7)
                         new_Midnight_working_hours=new_Midnight_working_hours.total_seconds()
-
+                #休憩時間が有りの場合
                 elif break_start_time!=None and break_finish_time!=None:
                         new_Midnight_working_hours=dt.timedelta(hours=7)-(break_finish_time-break_start_time)
                         new_Midnight_working_hours=new_Midnight_working_hours.total_seconds()
 
-
+        #TODO質問
         # print(new_Midnight_working_hours)
+        #総深夜時間労働の計算
         if new_Midnight_working_hours==0:
                 new_Midnight_working_hours=working_hours_table[13]
         elif Midnight_working_hours==0 and new_Midnight_working_hours!=0:
@@ -2072,7 +2216,8 @@ def modify():
         # print(work_start_time)
         cur.execute('UPDATE WORK_STATUS SET work_start_time="' + str(work_start_time) + '",work_finish_time="' + str(work_finish_time) + '",break_start_time="' + str(break_start_time) + '",break_finish_time="' + str(break_finish_time) + '",application_and_approval="' + str(approval_status) + '",interval_time="' + str(interval_time) + '" WHERE No="' + str(no) + '"')
         conn.commit()
-
+        #TODO質問
+        #最新の勤務情報のインターバル時間を更新
         if next_work_start_time!=None:
                 cur.execute('UPDATE WORK_STATUS SET interval_time="' + str(next_interval_time) + '" WHERE No="' + str(next_work_start_time[0]) + '"')
                 conn.commit()
@@ -2167,6 +2312,8 @@ def all_approval():
         application_and_approval="承認済み"
         cur.execute('SELECT * FROM WORK_STATUS WHERE DATE_FORMAT(date,"%Y%m")="'+str(year)+str(month)+'" AND application_and_approval= "承認待ち"')
         work_status_table=cur.fetchall()
+        #TODO質問
+        #一括承認処理
         if work_status_table==None:
                return redirect(url_for('admin_daily_attendance'))
         elif work_status_table!=None: 
@@ -2175,6 +2322,7 @@ def all_approval():
                 return redirect(url_for('admin_daily_attendance'))
 
 #admin_daily_attendance.htmlのセレクトボックスで全て表示を選んだ時の処理
+#TODO(12/9):↑何の画面の時？
 @app.route('/all_employee_display',methods=['POST','GET'])
 def all_employee_display():
         
@@ -2200,6 +2348,7 @@ def all_employee_display():
         break_finish_time_timeOnly=[]
         interval_time=[]
         approval_status=[]
+        #TODO(12/9):各if文はどんな時に何を返す？
         for i in range(len(work_status_table)):
                         no.append(work_status_table[i][0])
                         employee_no.append(work_status_table[i][1])
@@ -2230,6 +2379,7 @@ def all_employee_display():
 
         return render_template("admin_daily_attendance.html",day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,select2=select2,selected_value1=selected_value1,selected_value2=selected_value2)
 #admin_daily_attendance.htmlのセレクトボックスで承認待ちのみを選んだ時の処理
+#TODO(12/9):↑何の画面の時？
 @app.route("/admin_daily_attendance2",methods=['POST','GET'])
 def admin_daily_attendance2():
         year=request.form["year"]
@@ -2249,24 +2399,27 @@ def admin_daily_attendance2():
         
         conn.ping(reconnect=True)
         cur = conn.cursor(buffered=True)
-        cur.execute('select name,employee_no from ADMIN_USER_ACCOUNT where loginID= "' + str(session['user_id'][0]) + '";')
-        username_and_employeeno=cur.fetchone()
+        # cur.execute('select name,employee_no from ADMIN_USER_ACCOUNT where loginID= "' + str(session['user_id'][0]) + '";')
+        # username_and_employeeno=cur.fetchone()
         
         cur.execute('select * from WORK_STATUS where application_and_approval= "承認待ち"')
         work_status_table=cur.fetchall()
         cur.execute('SELECT employee_no,name From USER_ACCOUNT')
         general_user=cur.fetchall()
-        
+        #TODO(12/9):各if文はどんな時に何を返す？
         for i in range(len(work_status_table)):
                 no.append(work_status_table[i][0])
                 employee_no.append(work_status_table[i][1])
                 day.append(work_status_table[i][2].day)
                 start_time_timeOnly.append(work_status_table[i][4].time())
                 finish_time_timeOnly.append(work_status_table[i][5].time())
+                #TODO質問
+                #開始休憩時間のない場合
                 if work_status_table[i][6]==None:
                         break_start_time_timeOnly.append("0:00")
                 else:
                         break_start_time_timeOnly.append(work_status_table[i][6].time())
+                #終了休憩時間のない場合
                 if work_status_table[i][7]==None:
                         break_finish_time_timeOnly.append("0:00")
                 else:
@@ -2283,7 +2436,8 @@ def admin_daily_attendance2():
         selected_value1="./admin_daily_attendance2"
         select2="全て表示"
         selected_value2="./all_employee_display"
-        return render_template("admin_daily_attendance.html",admin_name=username_and_employeeno[0],admin_employee_no=username_and_employeeno[1],day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,select2=select2,selected_value1=selected_value1,selected_value2=selected_value2)
+        # return render_template("admin_daily_attendance.html",admin_name=username_and_employeeno[0],admin_employee_no=username_and_employeeno[1],day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,select2=select2,selected_value1=selected_value1,selected_value2=selected_value2)
+        return render_template("admin_daily_attendance.html",day=day,work_start_time=start_time_timeOnly,work_finish_time=finish_time_timeOnly,break_start_time=break_start_time_timeOnly,break_finish_time=break_finish_time_timeOnly,interval_time=interval_time,work_status_table_length=work_status_table_length,year=year,month=month,approval_status=approval_status,no=no,general_user_name=name,general_user_employee_no=employee_no,select1=select1,select2=select2,selected_value1=selected_value1,selected_value2=selected_value2)
 
         
         

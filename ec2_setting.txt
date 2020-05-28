@@ -1,0 +1,5 @@
+source dakokukun/bin/activate
+export PATH="$HOME/.pyenv/shims:$PATH"
+source ~/.bash_profile
+pyenv global 3.6.6
+pyenv rehash
