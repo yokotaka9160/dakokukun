@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>日次勤怠</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/css/daily_attendance_registration.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript" src="../static/js/drawer.js"></script>
+</head>
+<body>
+<form name="read" action="/a" method="POST" id="form">
+	<div class="row">
+		<div class="col-12">
+			<header>
+				<h1>打刻くん</h1>
+				<!-- <table class="menu" border="2" align="center">
+					<tr>
+						<th width="33%"><a href="/engraving"><img class="icon" src="../static/image/clock.png"><br>打刻</a></th>
+						<th class="selected-color" width="33%"><a href="/"><img class="icon" src="../static/image/calender.png"><br>日時勤怠</a></th>
+						<th width="33%"><a href=""><img class="icon" src="../static/image/PC.png"><br>システム管理</a></th>
+					</tr>
+				</table>
+				
+				
+				<div id="open" class="humberger">
+					<a href="#g_menu">
+					<div></div>
+					<div></div>
+					<div></div>
+					</a>
+				</div>
+				<div id="g_menu" class="outside">
+				    <div id="close" class="btn"><a href="#">×</a></div>
+				    <ul>
+				      <li><a href="/engraving">打刻</a></li>
+				      <li><a href="#">日時勤怠</a></li>
+				    </ul>
+				 </div> -->
+			</header>
+			<div class="container">
+				<table class="employee" border="1">
+					<tr>
+						<input type="hidden" name="no" value="{{no}}">
+						<input type="hidden" name="name" value="{{name}}">
+						<th class="employee-col" width="192px">氏名</th>
+						<td width="767px">{{name}}</td>
+					</tr>
+					<tr>
+						<input type="hidden" name="employee_no" value="{{employee_no}}">
+						<th class="employee-col">社員番号</th>
+						<td>{{employee_no}}</td>
+					</tr>
+				</table>
+
+				<table border="1" class="employee-worktime">
+					<tr>
+						<input type="hidden" name="date" value="{{date}}">
+						<input type="hidden" name="DayOfTheWeek" value="{{DayOfTheWeek}}">
+						<th class="employee-worktime-col" width="192px">日付</th>
+						<td class="employee-worktime-td" width="767px">{{date}}({{DayOfTheWeek}})</td>
+					</tr>
+					<tr>
+						<th class="employee-worktime-col">勤務区分</th>
+						<td class="employee-worktime-td">
+							<select name="work_classification" class="select-position">
+								<option value="出勤">
+									出勤
+								</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th class="employee-worktime-col">出勤・退勤時刻</th>
+						<td class="employee-worktime-td">
+							<input class="input-text" type="text" name="work_start_hour"><span>：</span><input class="input-text" type="text" name="work_start_minute"><span>～</span><input class="input-text" type="text" name="work_finish_hour"><span>：</span><input class="input-text" type="text" name="work_finish_minute">
+						</td>
+					</tr>
+					<tr>
+						<th class="employee-worktime-col">休憩</th>
+						<td class="employee-worktime-td"><input class="input-text" type="text" name="break_start_hour"><span>：</span><input class="input-text" type="text" name="break_start_minute"><!-- <input class="checkbox" type="checkbox">翌日 --><span>～</span><input class="input-text" type="text" name="break_finish_hour"><span>：</span><input class="input-text" type="text" name="break_finish_minute"></span><!-- <input class="checkbox" type="checkbox">翌日 --></td>
+					</tr>
+				<!-- 	<tr>
+						<th class="employee-worktime-col">休憩2</th>
+						<td class="employee-worktime-td"><input class="input-text" type="text"><input class="checkbox" type="checkbox">翌日<span>～</span><input class="input-text" type="text"><input class="checkbox" type="checkbox">翌日</td>
+					</tr> -->
+					<!-- <tr>
+						<th class="employee-worktime-col">備考</th>
+						<td class="employee-worktime-td"><input type="text"></td>
+					</tr> -->
+					<!-- <tr>
+						<th class="employee-worktime-col">所属長コメント</th>
+						<td class="employee-worktime-td"></td>
+					</tr> -->
+					<tr>
+						<th class="employee-worktime-col">申請承認</th>
+						<input type="hidden" name="approval_status" value="{{approval_status}}">
+						<td class="employee-worktime-td">{{approval_status}}</td>
+					</tr>
+				
+				</table>
+				<div class="btn-container">
+					<button type="submit" formaction="/daily_attendance">戻る</button>
+					<button type="submit" formaction="/modify">登録</button>
+					<!-- <button>申請</button> -->
+
+				</div>
+			</div>
+			<div class="footer-container">
+				<footer>
+					<h3 class="footer-title">打刻くん</h3>
+				</footer>
+			</div>
+		</div>
+	</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</form>
+</body>
+</html>

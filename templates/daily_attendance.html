@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>日時勤怠</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/css/daily_attendance.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript" src="../static/js/drawer.js"></script>
+	
+</head>
+<body>
+<form name="read" action="/a" method="POST" id="form">
+	<div class="row">
+		<div class="col-12">
+			<header id="header">
+				<h1>打刻くん</h1>
+				
+				<table class="menu" border="2" align="center" id="menu">
+					
+					<tr>
+						<th width="33%"><a class="menu-title" href="./engraving"><img class="icon" src="../static/image/clock.png"><br>打刻</a></th>
+						<th class="selected-color" width="33%"><a class="menu-title" href="#"><img class="icon" src="../static/image/calender.png"><br>日時勤怠</a></th>
+						<!-- <th class="menu-th" width="33%"><a class="menu-title" href=""><img class="icon" src="../static/image/PC.png"><br>システム管理</a></th>
+ -->
+						<th width="33%"><a href="/logout"><img class="icon" src="../static/image/logout.png"><br>ログアウト</a></th>
+
+					</tr>
+
+				</table>
+				<div id="open" class="humberger">
+					<a href="#g_menu">
+					<div></div>
+					<div></div>
+					<div></div>
+					</a>
+				</div>
+				<div id="g_menu" class="outside">
+				    <div id="close" class="btn"><a href="#">×</a></div>
+				    <ul>
+				      <li id="a"><a href="/engraving">打刻</a></li>
+				      <li id="b"><a href="#">日時勤怠</a></li>
+				      <li id="c"><a href="/logout">ログアウト</a></li>
+				    </ul>
+				 </div>
+				
+				
+			</header>
+			<div class="container">
+				<table border="1">
+					<tr>
+						<th  class="space">
+							社員番号
+						</th>
+						<th  class="space">
+							氏名
+						</th>
+						<th  class="space">
+							雇用形態
+						</th>
+						<th  class="space">
+							部門名
+						</th>
+						<!-- <th  class="space">
+							第一承認者
+						</th>
+						<th  class="space">
+							第二承認者
+						</th> -->
+					</tr>
+					<tr>
+						<td class="space">
+							<input type="hidden" name="employee_no" value="{{employee_no}}">
+							{{employee_no}}
+						</td>
+						<td class="space">
+							<input type="hidden" name="name" value="{{name}}">
+							{{name}}
+						</td>
+						<td class="space">
+							{{employment_status}}
+						</td>
+						<td class="space">
+							{{department}}
+						</td>
+					<!-- 	<td class="space">
+							承認太郎
+						</td>
+						<td class="space">
+							承認次郎
+						</td> -->
+					</tr>
+				</table>
+				<input type="hidden" value="{{year}}" name="year">
+				<input type="hidden" name="month2" value="{{month}}">
+				<div class="select-month-container">
+					<button class="before" type="submit" formaction="/LastMonth" value="{{month}}" name="last">◀</button>
+					<p class="year_month" id="year_month">{{year}}年{{month}}度</p>
+					<!-- <select class="select-month">
+							<option>2019年9月度</option>
+							<option>2019年10月度</option>
+					</select> -->
+					<button class="after" type="submit" formaction="/NextMonth" value="{{month}}" name="next">▶</button>
+					<button class="output-btn" type="submit" formaction="/write_csv"><p class="btn-text">csv出力</p></button>
+					<!-- <button class="output-btn"><p class="btn-text">PDF出力</p></button> -->
+					<button class="output-btn"　type="submit" formaction="/all_application"><p class="btn-text">一括申請</p></button>
+				</div>
+				<table border="1" align="center" class="report">
+					<tr>
+						<th>
+							日付
+						</th>
+						<th>
+							勤務区分
+						</th>
+						<th>
+							出勤時刻
+						</th>
+						<th>
+							退勤時間
+						</th>
+						<th>
+							休憩時間
+						</th>
+						<th>
+							残業時間
+						</th>
+						<th>
+							勤務間<br>
+							インターバル時間
+						</th>
+						<th>
+							申請承認
+						</th>
+
+					</tr>
+					{%for i in range(work_status_table_length)%}
+					<tr>
+						<input type="hidden" name="no_{{i}}" value="{{no[i]}}">
+						<!-- <input type="hidden" value="index_{{i}}" name="index"> -->
+						<td>
+							<input type="hidden" name="work_status_table_length" value="{{work_status_table_length}}">
+							<input type="hidden" name="day_{{i}}" value="{{day[i]}}">
+							<input type="hidden" name="DayOfTheWeek_{{i}}" value="{{DayOfTheWeek[i]}}">
+							{{day[i]}}{{DayOfTheWeek[i]}}<br>
+							<button class="pencil-btn" type="submit" value="index2_{{i}}" name="index2" formaction="/daily_attendance_registration">
+								<img class="icon-pencil" src="../static/image/pencil.png">
+							</button>
+						</td>
+						<td>
+							公休<br>
+							休日
+						</td>
+						<td>
+							{{work_start_time[i]}}
+						</td>
+						<td>
+							{{work_finish_time[i]}}
+						</td>
+						<td>
+							{{break_start_time[i]}}
+						</td>
+						<td>
+							{{break_finish_time[i]}}
+						</td>
+						{% if interval_time_check[i]==1 %}
+						<td class="change-color">
+							{{interval_time[i]}}
+						</td>
+						{% else %}
+						<td>
+							{{interval_time[i]}}
+						</td>
+						{% endif %}
+						<td>
+							<input type="hidden" name="approval_status_{{i}}" value="{{approval_status[i]}}">
+							{% if approval_status[i]=="未申請" %}
+								<button type="submit" class="output-btn" name="index" value="index_{{i}}" formaction="/update"><p class="btn-text">申請</p></button>
+							{% elif approval_status[i]=="承認待ち" %}
+								承認待ち
+							{% else %}
+								承認済み
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+
+				</table>
+				<h3 class="attendance-status-title">出勤状況</h3>
+				<table border="1"　class="attendance-status">
+					<tr>
+						<th width="30%" class="status-space">
+							所定日数
+					 	</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[4]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							出勤日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[5]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定外休日出勤日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[6]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定休日出勤日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[7]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							欠勤日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[8]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							遅刻日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[9]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							早退日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{attendance_status_table[10]}}日
+						</td>
+					</tr>
+						
+				</table>
+
+				<h3 class="attendance-status-title">勤務時間</h3>
+				<table border="1"　class="attendance-status">
+					<tr>
+						<th width="30%" class="status-space">
+							総労働時間
+					 	</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[4]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							実働時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[5]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							所定時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[6]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							所定内労働時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[7]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							残業時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[8]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定時間内労働時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[9]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定時間外労働時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[10]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定外休日労働時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[11]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定休日労働時
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[12]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							深夜労働時間
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[13]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							遅刻時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[14]}}
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							早退時間
+						</th>
+						<td width="70%" class="status-space-td">
+							{{working_hours_table[15]}}
+						</td>
+					</tr>
+						
+				</table>
+
+				<h3 class="attendance-status-title">休日・休暇取得</h3>
+				<table border="1"　class="attendance-status">
+					<tr>
+						<th width="30%" class="status-space">
+							公休日数
+					 	</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[4]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							有給休暇日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[5]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							本日までの有給休暇残数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[6]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							振替休日日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[7]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							本日までの振替休日日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[8]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							代休日数
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[9]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							本日までの代休残数
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[10]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							特別休暇日数
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[11]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							休職日数
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{holiday_and_vacation_acquisition_table[12]}}日
+						</td>
+					</tr>
+				</table>
+
+				<h3 class="attendance-status-title">勤務区分</h3>
+				<table border="1"　class="attendance-status">
+					<tr>
+						<th width="30%" class="status-space">
+							出勤
+					 	</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[4]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							振出
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[5]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							有休
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[6]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							午前有休
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[7]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							午後有休
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[8]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							法定休出
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[9]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							慶弔休暇
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[10]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							控除対象外遅刻早退
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[11]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							控除対象外早退
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[12]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							土曜出勤（振休なし)
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[13]}}日
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" class="status-space">
+							時短出勤
+
+						</th>
+						<td width="70%" class="status-space-td">
+							{{work_classification_table[14]}}日
+						</td>
+					</tr>
+				</table>
+				
+			</div>
+			<footer>
+					<h3 class="footer-title">打刻くん</h3>
+			</footer>
+				
+		
+		</div>
+	</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</form>
+</body>
+</html>

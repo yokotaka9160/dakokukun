@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>管理者側ログイン</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/css/login.css">
+</head>
+<body>
+<form name="read" action="/login2" method="POST">
+	<div class="row">
+		<div class="col-12">
+			
+
+			<header>
+				<h1>打刻くん</h1>
+			</header>
+			<p align="center">管理者側のログイン画面です。</p>
+			<table border="1" align="center">
+				<tr>
+					<th width="20%">
+						<p>ログインID</p>
+					</th>
+					<td width="80%">
+						<input type="text" class="input-text" name="userID">
+					</td>
+				</tr>
+				<tr>
+					<th width="20%">
+						<p>パスワード</p>
+					</th>
+					<td width="80%">
+						<input type="password" class="input-text" name="password">
+					</td>
+				</tr>
+			</table>
+			<div class="btn-place">
+			<button class="login-btn" type="submit"><p class="btn-text">ログイン</p></button>
+			</div>
+			<div class="a-tag">
+					<a href="./login_display">管理者以外の方はこちら</a>
+			</div>
+			<div class="footer-container">
+			<footer>
+				<h3>打刻くん</h3>
+			</footer>
+			</div>
+		</div>
+	</div>
+	
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</form>
+</body>
+</html>

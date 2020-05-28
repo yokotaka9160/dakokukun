@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>システム管理</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/css/system_management.css">
+</head>
+<body>
+<div class="row">
+		<div class="col-12">
+			<header>
+				<h1>打刻くん</h1>
+				<table class="menu" border="2" align="center">
+					<tr>
+						<th width="33%"><a href="#"><img class="icon" src="../static/image/clock.png"><br>打刻</a></th>
+						<th width="33%"><a href="#"><img class="icon" src="../static/image/calender.png"><br>日時勤怠</a></th>
+						<th class="selected-color" width="33%"><a href="#"><img class="icon" src="../static/image/PC.png"><br>システム管理</a></th>
+					</tr>
+				</table>
+			</header>
+			<div class="container">
+					<div class="select-month-container">
+					<button class="before">◀</button>
+					<select class="select-month">
+							<option>2019年9月度</option>
+							<option>2019年10月度</option>
+					</select>
+					<button class="after">▶</button>
+					<select class="select-month">
+							<option>部門</option>
+							<option>営業部</option>
+					</select>
+					<select class="select-month">
+							<option>氏名</option>
+							<option>打刻太郎</option>
+					</select>
+					<select class="select-month">
+							<option>雇用形態</option>
+							<option>一般社員</option>
+					</select>
+					<select class="select-month">
+							<option>承認者</option>
+							<option>承認太郎</option>
+					</select>
+					<button class="output-btn"><p class="btn-text">csv出力</p></button>
+					
+				</div>
+				<table class="employee-table" border="1">
+						<tr>
+							<th class="table-col">社員番号</th>
+							<th class="table-col">氏名</th>
+							<th class="table-col"></th>
+							<th class="table-col"></th>
+						</tr>
+						<tr>
+							<td class="table-dev"></td>
+							<td class="table-dev"></td>
+							<td class="table-dev"></td>
+							<td class="table-dev"></td>
+						</tr>
+				</table>
+
+			</div>
+			<div class="footer-container">
+				<footer>
+					<h3 class="footer-title">打刻くん</h3>
+				</footer>
+			</div>
+			
+		</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

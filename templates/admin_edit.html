@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>管理者日時勤怠</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/css/admin_edit.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript" src="../static/js/drawer.js"></script>
+</head>
+<body>
+<form name="read" action="/a" method="POST" id="form">
+	<div class="row">
+		<div class="col-12">
+		
+			<header>
+				<h1>打刻くん</h1>
+				<table class="menu" border="2" align="center">
+					<tr>
+
+						<th width="33%"><a href="./admin_daily_attendance"><img class="icon" src="../static/image/calender.png"><br>日時勤怠</a></th>
+						<th class="selected-color" width="33%"><a href="#"><img class="icon" src="../static/image/edit.png"><br>編集</a></th>
+						<th width="33%"><a href="/logout"><img class="icon" src="../static/image/logout.png"><br>ログアウト</a></th>
+
+					</tr>
+				</table>
+				<div id="open" class="humberger">
+					<a href="#g_menu">
+					<div></div>
+					<div></div>
+					<div></div>
+					</a>
+				</div>
+				<div id="g_menu" class="outside">
+				    <div id="close" class="btn"><a href="#">×</a></div>
+				    <ul>
+				      <li id="a"><a href="./admin_daily_attendance">日時勤怠</a></li>
+				      <li id="b"><a href="#">編集</a></li>
+				      <li id="c"><a href="/logout">ログアウト</a></li>
+				    </ul>
+				 </div>
+			</header>
+			
+			<div class="container">
+				
+				<input type="hidden" value="{{year}}" name="year">
+				<input type="hidden" name="month2" value="{{month}}">
+				<!-- <div class="select-month-container">
+					<button class="before" type="submit" formaction="/LastMonth" value="{{month}}" name="last">◀</button>
+					<p class="year_month" id="year_month">{{year}}年{{month}}度</p>
+					<select class="select-month">
+							<option>2019年9月度</option>
+							<option>2019年10月度</option>
+					</select>
+					<button class="after" type="submit" formaction="/NextMonth" value="{{month}}" name="next">▶</button>
+					<button class="output-btn"><p class="btn-text">csv出力</p></button>
+					<button class="output-btn"><p class="btn-text">PDF出力</p></button>
+					<button class="output-btn"><p class="btn-text">一括承認</p></button>
+				</div> -->
+				<table>
+					<tr>
+						<th>
+						<p class="column">社員番号</p>
+						</th>
+						<td>
+						<input type="text" name="search_employee_no">
+						</td>
+					</tr>
+					<tr>
+						<th>					
+						<p class="name-column">名前</p>
+						</th>
+						<td>
+						<input type="text" name="search_name">
+						</td>
+					</tr>
+				</table>
+				<input type="hidden" name="all" value="off">
+				<input type="checkbox" name="all" value="on"><p class="all-check">従業員全体の勤務状況を見る</p>
+				<button class="search-btn" type="submit" formaction="/edit">編集</button>
+			</div>
+	
+			<footer>
+				<h3 class="footer-title">打刻くん</h3>
+			</footer>
+		
+
+		</div>
+	</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</form>
+</body>
+</html>

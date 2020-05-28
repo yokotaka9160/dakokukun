@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>打刻</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/css/engraving.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript" src="../static/js/clock.js"></script>
+	<script type="text/javascript" src="../static/js/drawer.js"></script>
+</head>
+<body>
+<form name="read" action="/a" method="POST" id="form">
+	<div class="row">
+		<div class="col-12">
+			<header>
+				<h1>打刻くん</h1>
+				<!-- <button type="submit" class="logout-btn" formaction="/logout">ログアウト</button> -->
+				<table border="2" align="center" class="menu">
+					<tr>
+						<th class="selected-color" width="33%"><a href="#" class="menu-title"><img class="icon" src="../static/image/clock.png"><br>打刻</a></th>
+						<th width="33%"><a href="./daily_attendance" class="menu-title"><img class="icon" src="../static/image/calender.png"><br>日時勤怠</a></th>
+						<th width="33%"><a href="logout"><img class="icon" src="../static/image/logout.png"><br>ログアウト</a></th>
+					</tr>
+				</table>
+
+				<div id="open" class="humberger">
+					<a href="#g_menu">
+					<div></div>
+					<div></div>
+					<div></div>
+					</a>
+				</div>
+				<div id="g_menu" class="outside">
+				    <div id="close" class="btn2"><a href="#">×</a></div>
+				    <ul>
+				      <li id="a"><a href="#">打刻</a></li>
+				      <li id="b"><a href="/daily_attendance">日時勤怠</a></li>
+				      <li id="c"><a href="/logout">ログアウト</a></li>
+				    </ul>
+				 </div>
+
+			</header>
+			<input type="hidden" value="{{employee_no}}"name="employee_no">
+			<input name="name" type="hidden" value="{{name}}">
+			<input type="hidden" value="0" id="date" name="date">
+			<input type="hidden" value="0" id="time" name="time">
+			<input type="hidden" value="0" id="day" name="day">
+			<input type="hidden" value="0" id="DayOfTheWeek" name="DayOfTheWeek">
+			<input type="hidden" value="0" id="datetime" name="datetime">
+			<div class="container">
+				<p class="name">{{employee_no}} {{name}}</p>
+				<p class="date" id="clock_date"></p>
+				<p class="time" id="clock_time"></p>
+				<div class="btn-all-place">
+				<div class="btn-place">
+					
+						<button class="btn" type="submit" formaction="/work_start"><p class="btn-text">出勤</p></button>
+					
+				</div>
+				<div class="btn-place">
+					
+						<button class="btn" type="submit" formaction="/break_start"><p class="btn-text">休憩開始</p></button> 
+				
+				</div>
+				<div class="btn-place">
+					
+						<button class="btn" type="submit" formaction="/break_finish"><p class="btn-text">休憩終了</p></button>
+					
+				</div>
+				<div class="btn-place">
+					
+						<button class="btn" type="submit" formaction="/work_finish"><p class="btn-text">退勤</p></button>
+					
+				</div>
+				
+				</div>
+				{% if error!=None %}
+				<p class="error">{{error}}</p>
+				{% endif %}
+			</div>
+			<div class="footer-container">
+				<footer>
+					<h3>打刻くん</h3>
+				</footer>
+			</div>
+
+		</div>
+
+	</div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</form>
+</body>
+</html>

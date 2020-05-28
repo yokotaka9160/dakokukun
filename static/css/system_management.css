@@ -1,0 +1,120 @@
+h1{
+	display: inline-block;
+	color: #fff;
+	margin-left: 80px;
+	margin-bottom: 0;
+}
+header{
+	padding: 30px;
+	background-color: rgb(68,114,196);
+
+}
+
+.menu{
+	float: right;
+	margin-top: -25px;
+	width: 40%;
+	border-color: #fff;
+	border: 2px solid #fff;
+	color: #fff;
+	text-align: center;
+}
+a{
+	color: #fff;
+	display:block; 
+	width:100%; 
+	height:100%
+}
+a:hover{
+	color: #fff;
+}
+.icon{
+	height: 70px;
+	width: 70px;
+}
+.selected-color{
+	background-color: #77EEFF;
+}
+.container{
+	margin-top: 30px;
+	padding-right: 0;
+	padding-left: 0;
+	margin-bottom: 30px;
+}
+
+.select-month-container{
+	margin-top: 20px;
+}
+.before{
+	border-radius: 3px;
+	background-color: rgb(68,114,196);
+	color: #fff; 
+	border: 1px solid rgb(68,114,196);
+}
+.after{
+	border-radius: 3px;
+	background-color: rgb(68,114,196);
+	color: #fff; 
+	border: 1px solid rgb(68,114,196);
+}
+.select-month{
+	border-radius: 3px;
+}
+.output-btn{
+	margin-left: 20px;
+	border-radius: 5px;
+	background-color: rgb(68,114,196);
+	color: #fff; 
+	border: 1px solid rgb(68,114,196);
+}
+.btn-text{
+	padding-right: 10px;
+	padding-left: 10px;
+	margin-bottom: 0;
+}
+.table-dev{
+	padding: 10px;
+}
+.table-col{
+	padding: 10px;
+	background-color: #d3d3d3;
+}
+.employee-table{
+	width: 50%;
+	margin-top: 30px;
+}
+.row{
+	min-height: 100vh;
+	
+	margin-right: 0;
+	margin-left: 0;
+	padding-right: 0 !important;
+	padding-left: 0;
+}
+.col-12{
+	margin-right: 0;
+	margin-left: 0;
+	padding-right: 0 !important;
+	padding-left: 0;
+}
+footer{
+	
+	padding: 25px;
+	
+	background-color: #777;
+	width: 100%;
+}
+.footer-title{
+	text-align: center;
+	color: #fff;
+	margin-bottom: 0px;
+}
+.footer-container{
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+
+}
+body{
+	position: relative;
+}

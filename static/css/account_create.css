@@ -1,0 +1,134 @@
+h1{
+	text-align: center;
+	color: #fff;
+}
+header{
+	padding: 25px;
+	background-color: rgb(68,114,196);
+}
+.create-message{
+	margin-top: 70px;
+
+}
+.container{
+	margin-top: 30px;
+	padding-right: 0;
+	padding-left: 0;
+	margin-bottom: 30px;
+
+	
+}
+.error{
+	text-align: center;
+	color: red;
+	
+}
+table{
+width: 100%;
+border-color: rgb(68,114,196);
+}
+th{
+	padding-left: 20px;
+	padding-right: 40px;
+	background-color: #77EEFF;
+	color: #fff;
+}
+td{
+	padding-left: 20px;
+	padding-right: 50px;
+	
+}
+.input-text{
+	margin-top: 5px;
+	width: 85%;
+}
+.input-text2{
+	margin-top: 5px;
+	width: 85%;
+	margin-bottom: 5px;
+}
+select{
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.caution-mes{
+	margin-bottom: 0px;
+	font-size: 10px;
+}
+.checkbox{
+	margin-right: 10px;
+}
+.td-check{
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+span{
+	color: rgb(68,114,196);
+}
+.btn-place{
+	margin-top: 30px;
+	text-align: center;
+}
+.account-create-btn{
+	background-color: rgb(68,114,196);
+	border-radius: 5px;
+	color: #fff;
+	border: 1px solid rgb(68,114,196);
+	cursor: pointer;
+	
+}
+.account-create-btn:hover{
+	background-color: #77EEFF;
+	color: #fff;
+}
+.btn-text{
+	padding: 10px 10px;
+	margin-bottom: 0px;
+}
+.row{
+	min-height: 100vh;
+	
+	margin-right: 0;
+	margin-left: 0;
+	padding-right: 0 !important;
+	padding-left: 0;
+}
+.col-12{
+	margin-right: 0;
+	margin-left: 0;
+	padding-right: 0 !important;
+	padding-left: 0;
+}
+
+.footer-title{
+	text-align: center;
+	color: #fff;
+	margin-bottom: 0px;
+}
+@media(max-height:807px){
+	.footer-container{
+		position: relative;
+		width: 100%;
+	}
+	footer{
+		position: absolute;
+		top: 0;
+		padding: 25px;
+		
+		background-color: #777;
+		width: 100%;
+	}
+}
+@media(min-height: 808px){
+	body{
+		position: relative;
+	}
+	footer{
+		position: absolute;
+		bottom: 0;
+		padding: 25px;
+		
+		background-color: #777;
+		width: 100%;
+	}
+}	
